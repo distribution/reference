@@ -1,11 +1,20 @@
 name: test
-on: [push, pull_request]
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 permissions:
   contents: read
 
+env:
+  TESTFLAGS: -v
+  BUILDFLAGS: -v
+
 jobs:
-  test:
+  build:
     strategy:
       matrix:
         go-version: [1.20.x, 1.21.x]
@@ -13,9 +22,28 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     steps:
-      - uses: actions/setup-go@v4
-        with:
-          go-version: ${{ matrix.go-version }}
-      - uses: actions/checkout@v3
-      - name: Test
-        run: go test -v ./...
+    - uses: actions/checkout@v3
+    
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: ${{ matrix.go-version }}
+    
+    - name: Build
+      run: |
+        make build
+
+    - name: lint
+      uses: golangci/golangci-lint-action@v3
+      with:
+        version: v1.53
+        args: --print-resources-usage --timeout=10m --verbose
+
+    - name: Test
+      run: |
+        make coverage
+
+    - name: Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        directory: ./
