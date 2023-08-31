@@ -4,7 +4,7 @@ Go library to handle references to container images.
 
 <img src="/distribution-logo.svg" width="200px" />
 
-[![Build Status](https://github.com/distribution/reference/workflows/CI/badge.svg?branch=main&event=push)](https://github.com/distribution/reference/actions?query=workflow%3ACI)
+[![Build Status](https://github.com/distribution/reference/actions/workflows/test.yml/badge.svg?branch=main&event=push)](https://github.com/distribution/reference/actions?query=workflow%3ACI)
 [![GoDoc](https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&logoColor=white&style=flat-square)](https://pkg.go.dev/github.com/distribution/reference)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](LICENSE)
 [![FOSSA Status](https://app.fossa.com/api/projects/custom%2B162%2Fgithub.com%2Fdistribution%2Freference.svg?type=shield)](https://app.fossa.com/projects/custom%2B162%2Fgithub.com%2Fdistribution%2Freference?ref=badge_shield)
