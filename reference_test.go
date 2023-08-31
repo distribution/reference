@@ -291,8 +291,7 @@ func TestReferenceParse(t *testing.T) {
 				if named.Name() != tc.repository {
 					t.Errorf("unexpected repository: got %q, expected %q", named.Name(), tc.repository)
 				}
-				domain, _ := SplitHostname(named)
-				if domain != tc.domain {
+				if domain := Domain(named); domain != tc.domain {
 					t.Errorf("unexpected domain: got %q, expected %q", domain, tc.domain)
 				}
 			} else if tc.repository != "" || tc.domain != "" {
@@ -373,42 +372,42 @@ func TestWithNameFailure(t *testing.T) {
 	}
 }
 
-func TestSplitHostname(t *testing.T) {
+func TestDomainAndPath(t *testing.T) {
 	t.Parallel()
 	tests := []struct {
 		input  string
 		domain string
-		name   string
+		path   string
 	}{
 		{
 			input:  "test.com/foo",
 			domain: "test.com",
-			name:   "foo",
+			path:   "foo",
 		},
 		{
 			input:  "test_com/foo",
 			domain: "",
-			name:   "test_com/foo",
+			path:   "test_com/foo",
 		},
 		{
 			input:  "test:8080/foo",
 			domain: "test:8080",
-			name:   "foo",
+			path:   "foo",
 		},
 		{
 			input:  "test.com:8080/foo",
 			domain: "test.com:8080",
-			name:   "foo",
+			path:   "foo",
 		},
 		{
 			input:  "test-com:8080/foo",
 			domain: "test-com:8080",
-			name:   "foo",
+			path:   "foo",
 		},
 		{
 			input:  "xn--n3h.com:18080/foo",
 			domain: "xn--n3h.com:18080",
-			name:   "foo",
+			path:   "foo",
 		},
 	}
 	for _, tc := range tests {
@@ -419,12 +418,11 @@ func TestSplitHostname(t *testing.T) {
 			if err != nil {
 				t.Errorf("error parsing name: %s", err)
 			}
-			domain, name := SplitHostname(named)
-			if domain != tc.domain {
+			if domain := Domain(named); domain != tc.domain {
 				t.Errorf("unexpected domain: got %q, expected %q", domain, tc.domain)
 			}
-			if name != tc.name {
-				t.Errorf("unexpected name: got %q, expected %q", name, tc.name)
+			if path := Path(named); path != tc.path {
+				t.Errorf("unexpected name: got %q, expected %q", path, tc.path)
 			}
 		})
 	}
@@ -681,18 +679,18 @@ func TestParseNamed(t *testing.T) {
 	tests := []struct {
 		input  string
 		domain string
-		name   string
+		path   string
 		err    error
 	}{
 		{
 			input:  "test.com/foo",
 			domain: "test.com",
-			name:   "foo",
+			path:   "foo",
 		},
 		{
 			input:  "test:8080/foo",
 			domain: "test:8080",
-			name:   "foo",
+			path:   "foo",
 		},
 		{
 			input: "test_com/foo",
@@ -713,7 +711,7 @@ func TestParseNamed(t *testing.T) {
 		{
 			input:  "docker.io/library/foo",
 			domain: "docker.io",
-			name:   "library/foo",
+			path:   "library/foo",
 		},
 		// Ambiguous case, parser will add "library/" to foo
 		{
@@ -739,12 +737,11 @@ func TestParseNamed(t *testing.T) {
 				return
 			}
 
-			domain, name := SplitHostname(named)
-			if domain != tc.domain {
+			if domain := Domain(named); domain != tc.domain {
 				t.Errorf("unexpected domain: got %q, expected %q", domain, tc.domain)
 			}
-			if name != tc.name {
-				t.Errorf("unexpected name: got %q, expected %q", name, tc.name)
+			if path := Path(named); path != tc.path {
+				t.Errorf("unexpected name: got %q, expected %q", path, tc.path)
 			}
 		})
 	}

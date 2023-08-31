@@ -466,62 +466,62 @@ func TestNormalizedSplitHostname(t *testing.T) {
 	tests := []struct {
 		input  string
 		domain string
-		name   string
+		path   string
 	}{
 		{
 			input:  "test.com/foo",
 			domain: "test.com",
-			name:   "foo",
+			path:   "foo",
 		},
 		{
 			input:  "test_com/foo",
 			domain: "docker.io",
-			name:   "test_com/foo",
+			path:   "test_com/foo",
 		},
 		{
 			input:  "docker/migrator",
 			domain: "docker.io",
-			name:   "docker/migrator",
+			path:   "docker/migrator",
 		},
 		{
 			input:  "test.com:8080/foo",
 			domain: "test.com:8080",
-			name:   "foo",
+			path:   "foo",
 		},
 		{
 			input:  "test-com:8080/foo",
 			domain: "test-com:8080",
-			name:   "foo",
+			path:   "foo",
 		},
 		{
 			input:  "foo",
 			domain: "docker.io",
-			name:   "library/foo",
+			path:   "library/foo",
 		},
 		{
 			input:  "xn--n3h.com/foo",
 			domain: "xn--n3h.com",
-			name:   "foo",
+			path:   "foo",
 		},
 		{
 			input:  "xn--n3h.com:18080/foo",
 			domain: "xn--n3h.com:18080",
-			name:   "foo",
+			path:   "foo",
 		},
 		{
 			input:  "docker.io/foo",
 			domain: "docker.io",
-			name:   "library/foo",
+			path:   "library/foo",
 		},
 		{
 			input:  "docker.io/library/foo",
 			domain: "docker.io",
-			name:   "library/foo",
+			path:   "library/foo",
 		},
 		{
 			input:  "docker.io/library/foo/bar",
 			domain: "docker.io",
-			name:   "library/foo/bar",
+			path:   "library/foo/bar",
 		},
 	}
 	for _, tc := range tests {
@@ -532,12 +532,12 @@ func TestNormalizedSplitHostname(t *testing.T) {
 			if err != nil {
 				t.Errorf("error parsing name: %s", err)
 			}
-			domain, name := SplitHostname(named) //nolint:staticcheck // Ignore SA1019: SplitHostname is deprecated.
-			if domain != tc.domain {
+
+			if domain := Domain(named); domain != tc.domain {
 				t.Errorf("unexpected domain: got %q, expected %q", domain, tc.domain)
 			}
-			if name != tc.name {
-				t.Errorf("unexpected name: got %q, expected %q", name, tc.name)
+			if path := Path(named); path != tc.path {
+				t.Errorf("unexpected name: got %q, expected %q", path, tc.path)
 			}
 		})
 	}
