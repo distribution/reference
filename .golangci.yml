@@ -1,6 +1,7 @@
 linters:
   enable:
     - bodyclose
+    - dupword # Checks for duplicate words in the source code
     - gofmt
     - goimports
     - ineffassign
