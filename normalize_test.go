@@ -13,6 +13,10 @@ func TestValidateReferenceName(t *testing.T) {
 		"docker/docker",
 		"library/debian",
 		"debian",
+		"localhost/library/debian",
+		"localhost/debian",
+		"LOCALDOMAIN/library/debian",
+		"LOCALDOMAIN/debian",
 		"docker.io/docker/docker",
 		"docker.io/library/debian",
 		"docker.io/debian",
@@ -147,6 +151,34 @@ func TestParseRepositoryInfo(t *testing.T) {
 	}
 
 	tests := []tcase{
+		{
+			RemoteName:    "fooo",
+			FamiliarName:  "localhost/fooo",
+			FullName:      "localhost/fooo",
+			AmbiguousName: "localhost/fooo",
+			Domain:        "localhost",
+		},
+		{
+			RemoteName:    "fooo/bar",
+			FamiliarName:  "localhost/fooo/bar",
+			FullName:      "localhost/fooo/bar",
+			AmbiguousName: "localhost/fooo/bar",
+			Domain:        "localhost",
+		},
+		{
+			RemoteName:    "fooo",
+			FamiliarName:  "LOCALDOMAIN/fooo",
+			FullName:      "LOCALDOMAIN/fooo",
+			AmbiguousName: "LOCALDOMAIN/fooo",
+			Domain:        "LOCALDOMAIN",
+		},
+		{
+			RemoteName:    "fooo/bar",
+			FamiliarName:  "LOCALDOMAIN/fooo/bar",
+			FullName:      "LOCALDOMAIN/fooo/bar",
+			AmbiguousName: "LOCALDOMAIN/fooo/bar",
+			Domain:        "LOCALDOMAIN",
+		},
 		{
 			RemoteName:    "fooo/bar",
 			FamiliarName:  "fooo/bar",
