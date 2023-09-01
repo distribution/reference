@@ -165,25 +165,15 @@ func Path(named Named) (name string) {
 	return path
 }
 
+// splitDomain splits a named reference into a hostname and path string.
+// If no valid hostname is found, the hostname is empty and the full value
+// is returned as name
 func splitDomain(name string) (string, string) {
 	match := anchoredNameRegexp.FindStringSubmatch(name)
 	if len(match) != 3 {
 		return "", name
 	}
 	return match[1], match[2]
-}
-
-// SplitHostname splits a named reference into a
-// hostname and name string. If no valid hostname is
-// found, the hostname is empty and the full value
-// is returned as name
-//
-// Deprecated: Use [Domain] or [Path].
-func SplitHostname(named Named) (string, string) {
-	if r, ok := named.(namedRepository); ok {
-		return r.Domain(), r.Path()
-	}
-	return splitDomain(named.Name())
 }
 
 // Parse parses s and returns a syntactically valid Reference.
