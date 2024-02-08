@@ -35,8 +35,13 @@ import (
 )
 
 const (
+	// RepositoryNameTotalLengthMax is the maximum total number of characters in a repository name.
+	RepositoryNameTotalLengthMax = 255
+
 	// NameTotalLengthMax is the maximum total number of characters in a repository name.
-	NameTotalLengthMax = 255
+	//
+	// Deprecated: use [RepositoryNameTotalLengthMax] instead.
+	NameTotalLengthMax = RepositoryNameTotalLengthMax
 )
 
 var (
@@ -55,8 +60,8 @@ var (
 	// ErrNameEmpty is returned for empty, invalid repository names.
 	ErrNameEmpty = errors.New("repository name must have at least one component")
 
-	// ErrNameTooLong is returned when a repository name is longer than NameTotalLengthMax.
-	ErrNameTooLong = fmt.Errorf("repository name must not be more than %v characters", NameTotalLengthMax)
+	// ErrNameTooLong is returned when a repository name is longer than RepositoryNameTotalLengthMax.
+	ErrNameTooLong = fmt.Errorf("repository name must not be more than %v characters", RepositoryNameTotalLengthMax)
 
 	// ErrNameNotCanonical is returned when a name is not canonical.
 	ErrNameNotCanonical = errors.New("repository name must be canonical")
@@ -190,10 +195,6 @@ func Parse(s string) (Reference, error) {
 		return nil, ErrReferenceInvalidFormat
 	}
 
-	if len(matches[1]) > NameTotalLengthMax {
-		return nil, ErrNameTooLong
-	}
-
 	var repo repository
 
 	nameMatch := anchoredNameRegexp.FindStringSubmatch(matches[1])
@@ -203,6 +204,10 @@ func Parse(s string) (Reference, error) {
 	} else {
 		repo.domain = ""
 		repo.path = matches[1]
+	}
+
+	if len(repo.path) > RepositoryNameTotalLengthMax {
+		return nil, ErrNameTooLong
 	}
 
 	ref := reference{
@@ -243,14 +248,15 @@ func ParseNamed(s string) (Named, error) {
 // WithName returns a named object representing the given string. If the input
 // is invalid ErrReferenceInvalidFormat will be returned.
 func WithName(name string) (Named, error) {
-	if len(name) > NameTotalLengthMax {
-		return nil, ErrNameTooLong
-	}
-
 	match := anchoredNameRegexp.FindStringSubmatch(name)
 	if match == nil || len(match) != 3 {
 		return nil, ErrReferenceInvalidFormat
 	}
+
+	if len(match[2]) > RepositoryNameTotalLengthMax {
+		return nil, ErrNameTooLong
+	}
+
 	return repository{
 		domain: match[1],
 		path:   match[2],
