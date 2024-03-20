@@ -4,6 +4,7 @@ import (
 	_ "crypto/sha256"
 	_ "crypto/sha512"
 	"encoding/json"
+	"errors"
 	"strings"
 	"testing"
 
@@ -117,7 +118,7 @@ func TestReferenceParse(t *testing.T) {
 			tag:        "Uppercase",
 		},
 		{
-			input: strings.Repeat("a/", 128) + "a:tag",
+			input: "domain/" + strings.Repeat("a", 256) + ":tag",
 			err:   ErrNameTooLong,
 		},
 		{
@@ -266,6 +267,12 @@ func TestReferenceParse(t *testing.T) {
 			input: "[fe80::1%@invalidzone]:5000/repo",
 			err:   ErrReferenceInvalidFormat,
 		},
+		{
+			input:      "example.com/" + strings.Repeat("a", 255) + ":tag",
+			domain:     "example.com",
+			repository: "example.com/" + strings.Repeat("a", 255),
+			tag:        "tag",
+		},
 	}
 	for _, tc := range tests {
 		tc := tc
@@ -337,7 +344,7 @@ func TestWithNameFailure(t *testing.T) {
 	}{
 		{
 			input: "",
-			err:   ErrNameEmpty,
+			err:   ErrReferenceInvalidFormat,
 		},
 		{
 			input: ":justtag",
@@ -352,7 +359,11 @@ func TestWithNameFailure(t *testing.T) {
 			err:   ErrReferenceInvalidFormat,
 		},
 		{
-			input: strings.Repeat("a/", 128) + "a:tag",
+			input: "example.com/repo:tag",
+			err:   ErrReferenceInvalidFormat,
+		},
+		{
+			input: "example.com/" + strings.Repeat("a", 256),
 			err:   ErrNameTooLong,
 		},
 		{
@@ -365,8 +376,8 @@ func TestWithNameFailure(t *testing.T) {
 		t.Run(tc.input, func(t *testing.T) {
 			t.Parallel()
 			_, err := WithName(tc.input)
-			if err == nil {
-				t.Errorf("no error parsing name. expected: %s", tc.err)
+			if !errors.Is(err, tc.err) {
+				t.Errorf("unexpected error parsing name. expected: %s, got: %s", tc.err, err)
 			}
 		})
 	}
