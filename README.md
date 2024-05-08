@@ -12,6 +12,17 @@ Go library to handle references to container images.
 
 This repository contains a library for handling references to container images held in container registries. Please see [godoc](https://pkg.go.dev/github.com/distribution/reference) for details.
 
+## Usage
+
+Make sure to import hash implementation when parsing images with digest in a non-test file. For example:
+
+```go
+import (
+    _ "crypto/sha256"
+    _ "crypto/sha512"
+)
+```
+
 ## Contribution
 
 Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to contribute

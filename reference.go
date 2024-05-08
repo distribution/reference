@@ -1,6 +1,9 @@
 // Package reference provides a general type to represent any way of referencing images within the registry.
 // Its main purpose is to abstract tags and digests (content-addressable hash).
 //
+// Note: Hash implementation packages must be imported in order
+// for digest parsing to work. Example package for sha256: [crypto/sha256]
+//
 // Grammar
 //
 //	reference                       := name [ ":" tag ] [ "@" digest ]
