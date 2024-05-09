@@ -1,7 +1,7 @@
 // Package reference provides a general type to represent any way of referencing images within the registry.
 // Its main purpose is to abstract tags and digests (content-addressable hash).
 //
-// Grammar
+// # Grammar
 //
 //	reference                       := name [ ":" tag ] [ "@" digest ]
 //	name                            := [domain '/'] remote-name
@@ -24,6 +24,29 @@
 //	digest-hex                      := /[0-9a-fA-F]{32,}/ ; At least 128 bit digest value
 //
 //	identifier                      := /[a-f0-9]{64}/
+//
+// # Supported algorithms
+//
+// Implementations must register the algorithms they want to support for digests
+// by importing the appropriate implementation in a non-test file.
+//
+// For example, to register the sha256 algorithm implementation from Go's stdlib:
+//
+//	import (
+//		_ "crypto/sha256"
+//	)
+//
+// Even though digests may be assemblable as a string, always verify your input
+// with [digest.Parse] or use [digest.Digest.Validate] when accepting untrusted
+// input. While there are measures to avoid common problems, this ensures you
+// have valid digests in the rest of your application.
+//
+// While alternative encodings of hash values (digests) are possible (for example,
+// base64), this package deals exclusively with hex-encoded digests. Refer to
+// the [OCI image specification] for algorithms that are defined as part of the
+// specification.
+//
+// [OCI image specification]: https://github.com/opencontainers/image-spec/blob/v1.0.2/descriptor.md#registered-algorithms
 package reference
 
 import (
@@ -102,6 +125,16 @@ func (f Field) MarshalText() (p []byte, err error) {
 // UnmarshalText parses text bytes by invoking the
 // reference parser to ensure the appropriately
 // typed reference object is wrapped by field.
+//
+// An error is returned when unmarshaling a reference that contains a digest with an
+// algorithm that is not registered. Implementations must register the algorithm
+// by importing the appropriate implementation.
+//
+// For example, to register the sha256 algorithm implementation from Go's stdlib:
+//
+//	import (
+//		_ "crypto/sha256"
+//	)
 func (f *Field) UnmarshalText(p []byte) error {
 	r, err := Parse(string(p))
 	if err != nil {
@@ -181,8 +214,19 @@ func splitDomain(name string) (string, string) {
 	return match[1], match[2]
 }
 
-// Parse parses s and returns a syntactically valid Reference.
-// If an error was encountered it is returned, along with a nil Reference.
+// Parse parses s and returns a syntactically valid [Reference]. It returns a
+// nil Reference if an error occurs. When parsing a reference that contains a
+// digest, an error is returned if the digest's algorithm that is not registered.
+//
+// An error is returned when parsing a reference that contains a digest with an
+// algorithm that is not registered. Implementations must register the algorithm
+// by importing the appropriate implementation.
+//
+// For example, to register the sha256 algorithm implementation from Go's stdlib:
+//
+//	import (
+//		_ "crypto/sha256"
+//	)
 func Parse(s string) (Reference, error) {
 	matches := ReferenceRegexp.FindStringSubmatch(s)
 	if matches == nil {

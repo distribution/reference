@@ -49,10 +49,20 @@ type normalizedNamed interface {
 	Familiar() Named
 }
 
-// ParseNormalizedNamed parses a string into a named reference
-// transforming a familiar name from Docker UI to a fully
-// qualified reference. If the value may be an identifier
-// use ParseAnyReference.
+// ParseNormalizedNamed parses a string into a [Named] reference transforming a
+// familiar name from Docker UI to a fully qualified reference. If the value may
+// be an identifier, use [ParseAnyReference] instead. It returns a nil reference
+// if an error occurs.
+//
+// An error is returned when parsing a reference that contains a digest with an
+// algorithm that is not registered. Implementations must register the algorithm
+// by importing the appropriate implementation.
+//
+// For example, to register the sha256 algorithm implementation from Go's stdlib:
+//
+//	import (
+//		_ "crypto/sha256"
+//	)
 func ParseNormalizedNamed(s string) (Named, error) {
 	if ok := anchoredIdentifierRegexp.MatchString(s); ok {
 		return nil, fmt.Errorf("invalid repository name (%s), cannot specify 64-byte hexadecimal strings", s)
@@ -104,6 +114,16 @@ type namedTaggedDigested interface {
 //
 //	// Already a named reference
 //	docker.io/library/busybox:latest
+//
+// An error is returned when parsing a reference that contains a digest with an
+// algorithm that is not registered. Implementations must register the algorithm
+// by importing the appropriate implementation.
+//
+// For example, to register the sha256 algorithm implementation from Go's stdlib:
+//
+//	import (
+//		_ "crypto/sha256"
+//	)
 func ParseDockerRef(ref string) (Named, error) {
 	named, err := ParseNormalizedNamed(ref)
 	if err != nil {
@@ -243,6 +263,16 @@ func TagNameOnly(ref Named) Named {
 
 // ParseAnyReference parses a reference string as a possible identifier,
 // full digest, or familiar name.
+//
+// An error is returned when parsing a reference that contains a digest with an
+// algorithm that is not registered. Implementations must register the algorithm
+// by importing the appropriate implementation.
+//
+// For example, to register the sha256 algorithm implementation from Go's stdlib:
+//
+//	import (
+//		_ "crypto/sha256"
+//	)
 func ParseAnyReference(ref string) (Reference, error) {
 	if ok := anchoredIdentifierRegexp.MatchString(ref); ok {
 		return digestReference("sha256:" + ref), nil

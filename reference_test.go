@@ -1,8 +1,7 @@
 package reference
 
 import (
-	_ "crypto/sha256"
-	_ "crypto/sha512"
+	_ "crypto/sha256" // make sure the sha256 algorithm is registered, as it's used in tests.
 	"encoding/json"
 	"errors"
 	"strings"
@@ -99,6 +98,11 @@ func TestReferenceParse(t *testing.T) {
 			err:   digest.ErrDigestUnsupported,
 		},
 		{
+			// sha512 is valid, but not registered by default ("crypto/sha512" is not imported)
+			input: "validname@sha512:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+			err:   digest.ErrDigestUnsupported,
+		},
+		{
 			input: "Uppercase:tag",
 			err:   ErrNameContainsUppercase,
 		},
@@ -155,11 +159,11 @@ func TestReferenceParse(t *testing.T) {
 			tag:        "xn--n3h.com",
 		},
 		{
-			input:      "xn--7o8h.com/myimage:xn--7o8h.com@sha512:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", // 🐳.com in punycode
+			input:      "xn--7o8h.com/myimage:xn--7o8h.com@sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", // 🐳.com in punycode
 			domain:     "xn--7o8h.com",
 			repository: "xn--7o8h.com/myimage",
 			tag:        "xn--7o8h.com",
-			digest:     "sha512:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+			digest:     "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
 		},
 		{
 			input:      "foo_bar.com:8080",
