@@ -8,7 +8,7 @@ import (
 // that targets ParseNormalizedNamed
 // nolint:deadcode
 func FuzzParseNormalizedNamed(f *testing.F) {
-	f.Fuzz(func(t *testing.T, data string) {
+	f.Fuzz(func(_ *testing.T, data string) {
 		_, _ = ParseNormalizedNamed(data)
 	})
 }
