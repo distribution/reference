@@ -64,7 +64,7 @@ type normalizedNamed interface {
 //		_ "crypto/sha256"
 //	)
 func ParseNormalizedNamed(s string) (Named, error) {
-	if ok := anchoredIdentifierRegexp.MatchString(s); ok {
+	if ok := anchoredIdentifierRegexp().MatchString(s); ok {
 		return nil, fmt.Errorf("invalid repository name (%s), cannot specify 64-byte hexadecimal strings", s)
 	}
 	domain, remainder := splitDockerDomain(s)
@@ -274,7 +274,7 @@ func TagNameOnly(ref Named) Named {
 //		_ "crypto/sha256"
 //	)
 func ParseAnyReference(ref string) (Reference, error) {
-	if ok := anchoredIdentifierRegexp.MatchString(ref); ok {
+	if ok := anchoredIdentifierRegexp().MatchString(ref); ok {
 		return digestReference("sha256:" + ref), nil
 	}
 	if dgst, err := digest.Parse(ref); err == nil {
