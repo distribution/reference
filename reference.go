@@ -207,7 +207,7 @@ func Path(named Named) (name string) {
 // If no valid hostname is found, the hostname is empty and the full value
 // is returned as name
 func splitDomain(name string) (string, string) {
-	match := anchoredNameRegexp.FindStringSubmatch(name)
+	match := anchoredNameRegexp().FindStringSubmatch(name)
 	if len(match) != 3 {
 		return "", name
 	}
@@ -241,7 +241,7 @@ func Parse(s string) (Reference, error) {
 
 	var repo repository
 
-	nameMatch := anchoredNameRegexp.FindStringSubmatch(matches[1])
+	nameMatch := anchoredNameRegexp().FindStringSubmatch(matches[1])
 	if len(nameMatch) == 3 {
 		repo.domain = nameMatch[1]
 		repo.path = nameMatch[2]
@@ -292,7 +292,7 @@ func ParseNamed(s string) (Named, error) {
 // WithName returns a named object representing the given string. If the input
 // is invalid ErrReferenceInvalidFormat will be returned.
 func WithName(name string) (Named, error) {
-	match := anchoredNameRegexp.FindStringSubmatch(name)
+	match := anchoredNameRegexp().FindStringSubmatch(name)
 	if match == nil || len(match) != 3 {
 		return nil, ErrReferenceInvalidFormat
 	}
@@ -310,7 +310,7 @@ func WithName(name string) (Named, error) {
 // WithTag combines the name from "name" and the tag from "tag" to form a
 // reference incorporating both the name and the tag.
 func WithTag(name Named, tag string) (NamedTagged, error) {
-	if !anchoredTagRegexp.MatchString(tag) {
+	if !anchoredTagRegexp().MatchString(tag) {
 		return nil, ErrTagInvalidFormat
 	}
 	var repo repository
@@ -336,7 +336,7 @@ func WithTag(name Named, tag string) (NamedTagged, error) {
 // WithDigest combines the name from "name" and the digest from "digest" to form
 // a reference incorporating both the name and the digest.
 func WithDigest(name Named, digest digest.Digest) (Canonical, error) {
-	if !anchoredDigestRegexp.MatchString(digest.String()) {
+	if !anchoredDigestRegexp().MatchString(digest.String()) {
 		return nil, ErrDigestInvalidFormat
 	}
 	var repo repository
