@@ -1,18 +1,21 @@
+version: "2"
 linters:
   enable:
     - bodyclose
-    - dupword # Checks for duplicate words in the source code
-    - gofmt
-    - goimports
-    - ineffassign
+    - dupword
     - misspell
     - revive
-    - staticcheck
     - unconvert
-    - unused
-    - vet
   disable:
     - errcheck
-
-run:
-  deadline: 2m
+  exclusions:
+    generated: disable
+    presets:
+      - comments
+      - std-error-handling
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  exclusions:
+    generated: disable

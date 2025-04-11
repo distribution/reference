@@ -6,6 +6,15 @@ concurrency:
 
 on:
   schedule:
+    #        ┌───────────── minute (0 - 59)
+    #        │ ┌───────────── hour (0 - 23)
+    #        │ │ ┌───────────── day of the month (1 - 31)
+    #        │ │ │ ┌───────────── month (1 - 12)
+    #        │ │ │ │ ┌───────────── day of the week (0 - 6) (Sunday to Saturday)
+    #        │ │ │ │ │
+    #        │ │ │ │ │
+    #        │ │ │ │ │
+    #        * * * * *
     - cron: '0 12 * * 6'
   push:
     branches:
@@ -14,6 +23,10 @@ on:
     tags:
       - 'v*'
   pull_request:
+    # The branches below must be a subset of the branches above
+    branches:
+      - 'main'
+      - 'release/*'
 
 permissions:
   contents: read # to fetch code (actions/checkout)
@@ -44,12 +57,12 @@ jobs:
           git checkout HEAD^2
       -
         name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
+        uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
       -
         name: Autobuild
-        uses: github/codeql-action/autobuild@v2
+        uses: github/codeql-action/autobuild@v3
       -
         name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
+        uses: github/codeql-action/analyze@v3
