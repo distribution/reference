@@ -34,9 +34,9 @@ jobs:
         make build
 
     - name: lint
-      uses: golangci/golangci-lint-action@v6
+      uses: golangci/golangci-lint-action@v7
       with:
-        version: v1.59
+        version: v2.0
         args: --print-resources-usage --timeout=10m --verbose
 
     - name: Test
