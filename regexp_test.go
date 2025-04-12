@@ -161,7 +161,10 @@ func TestDomainRegexp(t *testing.T) {
 			match: false,
 		},
 	}
-	r := regexp.MustCompile(`^` + DomainRegexp.String() + `$`)
+	r, err := regexp.Compile(`^` + domainAndPort + `$`)
+	if err != nil {
+		t.Fatal(err)
+	}
 	for _, tc := range tests {
 		tc := tc
 		t.Run(tc.input, func(t *testing.T) {

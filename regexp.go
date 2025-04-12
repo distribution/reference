@@ -89,14 +89,12 @@ const (
 	// are allowed, IPv6 zone identifiers (rfc6874) or Special addresses such as
 	// IPv4-Mapped are deliberately excluded.
 	ipv6address = `\[(?:[a-fA-F0-9:]+)\]`
-)
 
-var (
 	// domainName defines the structure of potential domain components
 	// that may be part of image names. This is purposely a subset of what is
 	// allowed by DNS to ensure backwards compatibility with Docker image
 	// names. This includes IPv4 addresses on decimal format.
-	domainName = domainNameComponent + anyTimes(`\.`+domainNameComponent)
+	domainName = domainNameComponent + `(?:\.` + domainNameComponent + `)*`
 
 	// host defines the structure of potential domains based on the URI
 	// Host subcomponent on rfc3986. It may be a subset of DNS domain name,
@@ -108,7 +106,9 @@ var (
 	// allowed by the URI Host subcomponent on rfc3986 to ensure backwards
 	// compatibility with Docker image names.
 	domainAndPort = host + optionalPort
+)
 
+var (
 	// anchoredTagRegexp matches valid tag names, anchored at the start and
 	// end of the matched string.
 	anchoredTagRegexp = regexp.MustCompile(anchored(tag))
