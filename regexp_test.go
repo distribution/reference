@@ -179,9 +179,9 @@ func TestDomainRegexp(t *testing.T) {
 
 func TestFullNameRegexp(t *testing.T) {
 	t.Parallel()
-	if anchoredNameRegexp.NumSubexp() != 2 {
+	if anchoredNameRegexp().NumSubexp() != 2 {
 		t.Fatalf("anchored name regexp should have two submatches: %v, %v != 2",
-			anchoredNameRegexp, anchoredNameRegexp.NumSubexp())
+			anchoredNameRegexp(), anchoredNameRegexp().NumSubexp())
 	}
 
 	tests := []regexpMatch{
@@ -472,7 +472,7 @@ func TestFullNameRegexp(t *testing.T) {
 		tc := tc
 		t.Run(tc.input, func(t *testing.T) {
 			t.Parallel()
-			checkRegexp(t, anchoredNameRegexp, tc)
+			checkRegexp(t, anchoredNameRegexp(), tc)
 		})
 	}
 }
@@ -583,7 +583,7 @@ func TestIdentifierRegexp(t *testing.T) {
 		tc := tc
 		t.Run(tc.input, func(t *testing.T) {
 			t.Parallel()
-			match := anchoredIdentifierRegexp.MatchString(tc.input)
+			match := anchoredIdentifierRegexp().MatchString(tc.input)
 			if match != tc.match {
 				t.Errorf("Expected match=%t, got %t", tc.match, match)
 			}
