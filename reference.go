@@ -232,9 +232,9 @@ func Parse(s string) (Reference, error) {
 		return nil, ErrNameEmpty
 	}
 
-	matches := ReferenceRegexp.FindStringSubmatch(s)
+	matches := referenceRegexp.FindStringSubmatch(s)
 	if matches == nil {
-		if sl := strings.ToLower(s); sl != s && ReferenceRegexp.FindStringSubmatch(sl) != nil {
+		if sl := strings.ToLower(s); sl != s && referenceRegexp.FindStringSubmatch(sl) != nil {
 			// Succeeds when lower-casing, so input contains an invalid repository name.
 			return nil, ErrNameContainsUppercase
 		}
