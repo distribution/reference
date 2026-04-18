@@ -31,7 +31,7 @@ var NameRegexp = regexp.MustCompile(namePat)
 // ReferenceRegexp is the full supported format of a reference. The regexp
 // is anchored and has capturing groups for name, tag, and digest
 // components.
-var ReferenceRegexp = regexp.MustCompile(referencePat)
+var ReferenceRegexp = referenceRegexp
 
 // TagRegexp matches valid tag names. From [docker/docker:graph/tags.go].
 //
@@ -109,6 +109,11 @@ const (
 )
 
 var (
+	// referenceRegexp is the full supported format of a reference. The regexp
+	// is anchored and has capturing groups for name, tag, and digest
+	// components.
+	referenceRegexp = regexp.MustCompile(referencePat)
+
 	// anchoredTagRegexp matches valid tag names, anchored at the start and
 	// end of the matched string.
 	anchoredTagRegexp = regexp.MustCompile(anchored(tag))
@@ -131,7 +136,8 @@ var (
 
 	// anchoredNameRegexp is used to parse a name value, capturing the
 	// domain and trailing components.
-	anchoredNameRegexp = regexp.MustCompile(anchored(optional(capture(domainAndPort), `/`), capture(remoteName)))
+	anchoredNameRegexp = regexp.MustCompile(anchoredNamePat)
+	anchoredNamePat    = anchored(optional(capture(domainAndPort), `/`), capture(remoteName))
 
 	referencePat = anchored(capture(namePat), optional(`:`, capture(tag)), optional(`@`, capture(digestPat)))
 
