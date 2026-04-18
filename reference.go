@@ -228,12 +228,14 @@ func splitDomain(name string) (string, string) {
 //		_ "crypto/sha256"
 //	)
 func Parse(s string) (Reference, error) {
+	if s == "" {
+		return nil, ErrNameEmpty
+	}
+
 	matches := ReferenceRegexp.FindStringSubmatch(s)
 	if matches == nil {
-		if s == "" {
-			return nil, ErrNameEmpty
-		}
-		if ReferenceRegexp.FindStringSubmatch(strings.ToLower(s)) != nil {
+		if sl := strings.ToLower(s); sl != s && ReferenceRegexp.FindStringSubmatch(sl) != nil {
+			// Succeeds when lower-casing, so input contains an invalid repository name.
 			return nil, ErrNameContainsUppercase
 		}
 		return nil, ErrReferenceInvalidFormat
