@@ -6,13 +6,18 @@ import (
 	"testing"
 )
 
+type regExper interface {
+	FindStringSubmatch(s string) []string
+	NumSubexp() int
+}
+
 type regexpMatch struct {
 	input string
 	match bool
 	subs  []string
 }
 
-func checkRegexp(t *testing.T, r *regexp.Regexp, m regexpMatch) {
+func checkRegexp(t *testing.T, r regExper, m regexpMatch) {
 	t.Helper()
 	matches := r.FindStringSubmatch(m.input)
 	if m.match && matches != nil {

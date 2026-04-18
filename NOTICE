@@ -1,0 +1,11 @@
+lazyregexp implementation (internal/lazyregexp)
+
+The internal/lazyregexp directory contains code derived from the Go project.
+
+Copyright 2009-2018 The Go Authors.
+Licensed under the BSD 3-Clause License.
+
+Modifications Copyright 2026 The CNCF distribution authors.
+
+The BSD license text and Go patent grant are included in
+internal/lazyregexp/LICENSE and internal/lazyregexp/PATENTS.

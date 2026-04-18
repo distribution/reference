@@ -3,6 +3,8 @@ package reference
 import (
 	"regexp"
 	"strings"
+
+	"github.com/distribution/reference/internal/lazyregexp"
 )
 
 // DigestRegexp matches well-formed digests, including algorithm (e.g. "sha256:<encoded>").
@@ -31,7 +33,7 @@ var NameRegexp = regexp.MustCompile(namePat)
 // ReferenceRegexp is the full supported format of a reference. The regexp
 // is anchored and has capturing groups for name, tag, and digest
 // components.
-var ReferenceRegexp = referenceRegexp
+var ReferenceRegexp = regexp.MustCompile(referencePat)
 
 // TagRegexp matches valid tag names. From [docker/docker:graph/tags.go].
 //
@@ -112,15 +114,15 @@ var (
 	// referenceRegexp is the full supported format of a reference. The regexp
 	// is anchored and has capturing groups for name, tag, and digest
 	// components.
-	referenceRegexp = regexp.MustCompile(referencePat)
+	referenceRegexp = lazyregexp.New(referencePat)
 
 	// anchoredTagRegexp matches valid tag names, anchored at the start and
 	// end of the matched string.
-	anchoredTagRegexp = regexp.MustCompile(anchored(tag))
+	anchoredTagRegexp = lazyregexp.New(anchored(tag))
 
 	// anchoredDigestRegexp matches valid digests, anchored at the start and
 	// end of the matched string.
-	anchoredDigestRegexp = regexp.MustCompile(anchored(digestPat))
+	anchoredDigestRegexp = lazyregexp.New(anchored(digestPat))
 
 	// pathComponent restricts path-components to start with an alphanumeric
 	// character, with following parts able to be separated by a separator
@@ -136,14 +138,14 @@ var (
 
 	// anchoredNameRegexp is used to parse a name value, capturing the
 	// domain and trailing components.
-	anchoredNameRegexp = regexp.MustCompile(anchoredNamePat)
+	anchoredNameRegexp = lazyregexp.New(anchoredNamePat)
 	anchoredNamePat    = anchored(optional(capture(domainAndPort), `/`), capture(remoteName))
 
 	referencePat = anchored(capture(namePat), optional(`:`, capture(tag)), optional(`@`, capture(digestPat)))
 
 	// anchoredIdentifierRegexp is used to check or match an
 	// identifier value, anchored at start and end of string.
-	anchoredIdentifierRegexp = regexp.MustCompile(anchored(identifier))
+	anchoredIdentifierRegexp = lazyregexp.New(anchored(identifier))
 )
 
 // optional wraps the expression in a non-capturing group and makes the
