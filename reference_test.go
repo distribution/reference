@@ -272,6 +272,18 @@ func TestReferenceParse(t *testing.T) {
 			err:   ErrReferenceInvalidFormat,
 		},
 		{
+			input: "[:::]:5000/repo",
+			err:   ErrReferenceInvalidFormat,
+		},
+		{
+			input: "[:::::::]:5000/repo",
+			err:   ErrReferenceInvalidFormat,
+		},
+		{
+			input: "[fd00123123123]:75050/repo",
+			err:   ErrReferenceInvalidFormat,
+		},
+		{
 			input:      "example.com/" + strings.Repeat("a", 255) + ":tag",
 			domain:     "example.com",
 			repository: "example.com/" + strings.Repeat("a", 255),
