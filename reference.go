@@ -52,6 +52,7 @@ package reference
 import (
 	"errors"
 	"fmt"
+	"net"
 	"strings"
 
 	"github.com/opencontainers/go-digest"
@@ -203,6 +204,21 @@ func Path(named Named) (name string) {
 	return path
 }
 
+// validateIPv6Host rejects a bracketed host that is not an IP address.
+// The reference grammar uses an RFC 3986 IPv6address. The name regexp only
+// checks that the brackets contain hex digits and colons, so "[:::]" and
+// "[fd00123123123]" used to parse.
+func validateIPv6Host(domain string) error {
+	if domain == "" || domain[0] != '[' {
+		return nil
+	}
+	end := strings.IndexByte(domain, ']')
+	if end <= 1 || net.ParseIP(domain[1:end]) == nil {
+		return ErrReferenceInvalidFormat
+	}
+	return nil
+}
+
 // splitDomain splits a named reference into a hostname and path string.
 // If no valid hostname is found, the hostname is empty and the full value
 // is returned as name
@@ -255,6 +271,9 @@ func Parse(s string) (Reference, error) {
 	if len(repo.path) > RepositoryNameTotalLengthMax {
 		return nil, ErrNameTooLong
 	}
+	if err := validateIPv6Host(repo.domain); err != nil {
+		return nil, err
+	}
 
 	ref := reference{
 		namedRepository: repo,
@@ -301,6 +320,9 @@ func WithName(name string) (Named, error) {
 
 	if len(match[2]) > RepositoryNameTotalLengthMax {
 		return nil, ErrNameTooLong
+	}
+	if err := validateIPv6Host(match[1]); err != nil {
+		return nil, err
 	}
 
 	return repository{
