@@ -74,7 +74,7 @@ func ParseNormalizedNamed(s string) (Named, error) {
 	} else {
 		remote = remainder
 	}
-	if strings.ToLower(remote) != remote {
+	if hasUpperASCII(remote) {
 		return nil, fmt.Errorf("invalid reference format: repository name (%s) must be lowercase", remote)
 	}
 
@@ -169,7 +169,7 @@ func splitDockerDomain(name string) (domain, remoteName string) {
 		// - contains a "." (e.g., "example.com" or "127.0.0.1")
 		// - contains a ":" (e.g., "example:5000", "::1", or "[::1]:5000")
 		domain, remoteName = maybeDomain, maybeRemoteName
-	case strings.ToLower(maybeDomain) != maybeDomain:
+	case hasUpperASCII(maybeDomain):
 		// Uppercase namespaces are not allowed, so if the first element
 		// is not lowercase, we assume it to be a domain-name.
 		domain, remoteName = maybeDomain, maybeRemoteName
