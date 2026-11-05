@@ -117,6 +117,21 @@ func TestReferenceParse(t *testing.T) {
 			err:   ErrNameContainsUppercase,
 		},
 		{
+			// Only ASCII letters count as uppercase. The Kelvin sign (U+212A)
+			// lowercases to "k" with strings.ToLower, but is not valid in a tag.
+			input: "repo:\u212A",
+			err:   ErrReferenceInvalidFormat,
+		},
+		{
+			// "İ" (U+0130) lowercases to "i" with strings.ToLower.
+			input: "repo:\u0130",
+			err:   ErrReferenceInvalidFormat,
+		},
+		{
+			input: "\u212A/app",
+			err:   ErrReferenceInvalidFormat,
+		},
+		{
 			input:      "lowercase:Uppercase",
 			repository: "lowercase",
 			tag:        "Uppercase",

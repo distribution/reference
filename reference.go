@@ -52,7 +52,6 @@ package reference
 import (
 	"errors"
 	"fmt"
-	"strings"
 
 	"github.com/opencontainers/go-digest"
 )
@@ -234,7 +233,7 @@ func Parse(s string) (Reference, error) {
 
 	matches := referenceRegexp.FindStringSubmatch(s)
 	if matches == nil {
-		if sl := strings.ToLower(s); sl != s && referenceRegexp.FindStringSubmatch(sl) != nil {
+		if hasUpperASCII(s) && referenceRegexp.FindStringSubmatch(toLowerASCII(s)) != nil {
 			// Succeeds when lower-casing, so input contains an invalid repository name.
 			return nil, ErrNameContainsUppercase
 		}
@@ -274,6 +273,32 @@ func Parse(s string) (Reference, error) {
 	}
 
 	return r, nil
+}
+
+// hasUpperASCII reports whether s contains an ASCII uppercase letter.
+//
+// Only ASCII is considered: [strings.ToLower] also maps non-ASCII letters, such
+// as "É" or the Kelvin sign (U+212A), and replaces invalid UTF-8. A reference
+// can never contain those, so they must not be reported as uppercase.
+func hasUpperASCII(s string) bool {
+	for i := 0; i < len(s); i++ {
+		if 'A' <= s[i] && s[i] <= 'Z' {
+			return true
+		}
+	}
+	return false
+}
+
+// toLowerASCII returns s with ASCII uppercase letters mapped to lowercase.
+// Other bytes are left unchanged; see [hasUpperASCII].
+func toLowerASCII(s string) string {
+	b := []byte(s)
+	for i, c := range b {
+		if 'A' <= c && c <= 'Z' {
+			b[i] = c + ('a' - 'A')
+		}
+	}
+	return string(b)
 }
 
 // ParseNamed parses s and returns a syntactically valid reference implementing

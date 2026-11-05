@@ -1,6 +1,7 @@
 package reference
 
 import (
+	"errors"
 	"strconv"
 	"testing"
 
@@ -352,6 +353,30 @@ func TestParseReferenceWithTagAndDigest(t *testing.T) {
 	}
 	if expected, actual := shortRef, FamiliarString(ref); actual != expected {
 		t.Fatalf("Invalid parsed reference for %q: expected %q, got %q", ref, expected, actual)
+	}
+}
+
+func TestParseNormalizedNamedNonASCII(t *testing.T) {
+	t.Parallel()
+	// Non-ASCII letters and invalid UTF-8 are never valid in a reference, so
+	// they are reported as an invalid format, not as uppercase.
+	for _, name := range []string{
+		"\u00C9",      // "É" lowercases to "é" with strings.ToLower.
+		"\u212A/app",  // The Kelvin sign lowercases to "k".
+		"repo:\u212A", // The repository is lowercase, only the tag is invalid.
+		"repo\xff",    // strings.ToLower replaces invalid UTF-8.
+	} {
+		_, err := ParseNormalizedNamed(name)
+		if !errors.Is(err, ErrReferenceInvalidFormat) {
+			t.Errorf("ParseNormalizedNamed(%q): expected %v, got %v", name, ErrReferenceInvalidFormat, err)
+		}
+	}
+
+	// Only ASCII uppercase makes the first component a domain.
+	for _, name := range []string{"É/App", "K/App"} {
+		if domain, remoteName := splitDockerDomain(name); domain != defaultDomain || remoteName != name {
+			t.Errorf("splitDockerDomain(%q): expected (%q, %q), got (%q, %q)", name, defaultDomain, name, domain, remoteName)
+		}
 	}
 }
 
