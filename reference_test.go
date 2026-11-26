@@ -259,6 +259,18 @@ func TestReferenceParse(t *testing.T) {
 			repository: "[2001:db8::]:5000/repo",
 		},
 		{
+			input:      "[::ffff:192.0.2.128]/repo:tag",
+			domain:     "[::ffff:192.0.2.128]",
+			repository: "[::ffff:192.0.2.128]/repo",
+			tag:        "tag",
+		},
+		{
+			input:      "[::ffff:192.0.2.128]:5000/repo:tag",
+			domain:     "[::ffff:192.0.2.128]:5000",
+			repository: "[::ffff:192.0.2.128]:5000/repo",
+			tag:        "tag",
+		},
+		{
 			input:      "[::1]:5000/repo",
 			domain:     "[::1]:5000",
 			repository: "[::1]:5000/repo",
