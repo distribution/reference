@@ -157,6 +157,46 @@ func TestDomainRegexp(t *testing.T) {
 			match: true,
 		},
 		{
+			input: "[::ffff:192.0.2.128]",
+			match: true,
+		},
+		{
+			input: "[::ffff:192.0.2.128]:5000",
+			match: true,
+		},
+		{
+			input: "[0:0:0:0:0:ffff:192.0.2.128]",
+			match: true,
+		},
+		{
+			input: "[2001:db8:3:4::192.0.2.33]",
+			match: true,
+		},
+		{
+			input: "[::ffff:192.0.2]",
+			match: false,
+		},
+		{
+			input: "[::ffff:192.0.2.128.1]",
+			match: false,
+		},
+		{
+			input: "[::ffff:192.0.2.128%eth0]",
+			match: false,
+		},
+		{
+			input: "::ffff:192.0.2.128",
+			match: false,
+		},
+		{
+			input: "[192.0.2.128]",
+			match: false,
+		},
+		{
+			input: "[::ffff:192.0.2.128]5000",
+			match: false,
+		},
+		{
 			input: "fd00:1:2::3:75050", // bad ipv6 without square brackets
 			match: false,
 		},

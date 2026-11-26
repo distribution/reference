@@ -31,6 +31,7 @@ func TestValidateReferenceName(t *testing.T) {
 		"192.168.0.1:8/debian",
 		"192.168.0.2:25000/debian",
 		"thisisthesongthatneverendsitgoesonandonandonthisisthesongthatnev",
+		"[2001:db8:3:4::192.0.2.33]:5000/debian",
 		"[fc00::1]:5000/docker",
 		"[fc00::1]:5000/docker/docker",
 		"[fc00:1:2:3:4:5:6:7]:5000/library/debian",
@@ -55,7 +56,6 @@ func TestValidateReferenceName(t *testing.T) {
 		"[fc00::1]:5000",
 		"fc00::1:5000/debian",
 		"[fe80::1%eth0]:5000/debian",
-		"[2001:db8:3:4::192.0.2.33]:5000/debian",
 		"1a3f5e7d9c1b3a5f7e9d1c3b5a7f9e1d3c5b7a9f1e3d5d7c9b1a3f5e7d9c1b3a",
 	}
 
@@ -405,6 +405,14 @@ func TestParseAnyReference(t *testing.T) {
 		Equivalent string
 		Expected   Reference
 	}{
+		{
+			Reference:  "[::ffff:192.0.2.128]/bar",
+			Equivalent: "[::ffff:192.0.2.128]/bar",
+		},
+		{
+			Reference:  "[::ffff:192.0.2.128]:5000/bar:latest",
+			Equivalent: "[::ffff:192.0.2.128]:5000/bar:latest",
+		},
 		{
 			Reference:  "redis",
 			Equivalent: "docker.io/library/redis",

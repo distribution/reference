@@ -13,8 +13,8 @@ var DigestRegexp = regexp.MustCompile(digestPat)
 // part of image names. This is purposely a subset of what is allowed by DNS to
 // ensure backwards compatibility with Docker image names. It may be a subset of
 // DNS domain name, an IPv4 address in decimal format, or an IPv6 address between
-// square brackets (excluding zone identifiers as defined by [RFC 6874] or special
-// addresses such as IPv4-Mapped).
+// square brackets, including IPv4-mapped addresses (excluding zone identifiers
+// as defined by [RFC 6874]).
 //
 // [RFC 6874]: https://www.rfc-editor.org/rfc/rfc6874.
 var DomainRegexp = regexp.MustCompile(domainAndPort)
@@ -85,10 +85,9 @@ const (
 	identifier = `([a-f0-9]{64})`
 
 	// ipv6address are enclosed between square brackets and may be represented
-	// in many ways, see rfc5952. Only IPv6 in compressed or uncompressed format
-	// are allowed, IPv6 zone identifiers (rfc6874) or Special addresses such as
-	// IPv4-Mapped are deliberately excluded.
-	ipv6address = `\[(?:[a-fA-F0-9:]+)\]`
+	// in many ways, see rfc5952. Compressed and uncompressed forms may include
+	// a dotted-decimal IPv4 suffix. IPv6 zone identifiers (rfc6874) are excluded.
+	ipv6address = `\[(?:[a-fA-F0-9:]+)(?::[0-9]{1,3}(?:\.[0-9]{1,3}){3})?\]`
 
 	// domainName defines the structure of potential domain components
 	// that may be part of image names. This is purposely a subset of what is
@@ -99,8 +98,8 @@ const (
 	// host defines the structure of potential domains based on the URI
 	// Host subcomponent on rfc3986. It may be a subset of DNS domain name,
 	// or an IPv4 address in decimal format, or an IPv6 address between square
-	// brackets (excluding zone identifiers as defined by rfc6874 or special
-	// addresses such as IPv4-Mapped).
+	// brackets, including IPv4-mapped addresses (excluding zone identifiers
+	// as defined by rfc6874).
 	host = `(?:` + domainName + `|` + ipv6address + `)`
 
 	// allowed by the URI Host subcomponent on rfc3986 to ensure backwards
